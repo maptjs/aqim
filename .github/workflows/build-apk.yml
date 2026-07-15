@@ -16,18 +16,33 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: "17"
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          channel: stable
+          cache: true
+
+      - name: Flutter Doctor
+        run: flutter doctor -v
+
+      - name: Clean
+        run: flutter clean
 
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Search shrinkResources
+        run: |
+          echo "===== shrinkResources ====="
+          grep -R -n "shrinkResources" . || true
+
+          echo "===== minifyEnabled ====="
+          grep -R -n "minifyEnabled" . || true
+
       - name: Build APK
-        run: flutter build apk --debug
+        run: flutter build apk --debug --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
